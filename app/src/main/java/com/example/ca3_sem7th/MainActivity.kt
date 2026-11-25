@@ -3,28 +3,29 @@ package com.example.ca3_sem7th
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class WorkoutViewModel : ViewModel() {
 
-    var count by mutableIntStateOf(0)
-        private set
+    private val _count = MutableStateFlow(0)
+    val count: StateFlow<Int> = _count.asStateFlow()
 
     fun increment() {
-        count++
+        _count.value++
     }
 
     fun reset() {
-        count = 0
+        _count.value = 0
     }
 }
 
@@ -39,8 +40,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 @Composable
 fun WorkoutApp(vm: WorkoutViewModel = viewModel()) {
+    val count by vm.count.collectAsState()
 
     Column(
         modifier = Modifier
@@ -58,7 +61,7 @@ fun WorkoutApp(vm: WorkoutViewModel = viewModel()) {
         Spacer(modifier = Modifier.height(30.dp))
 
         Text(
-            text = "Reps: ${vm.count}",
+            text = "Reps: $count",
             style = MaterialTheme.typography.headlineLarge
         )
 
